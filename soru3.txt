@@ -1,0 +1,74 @@
+Trie (Metin Ağacı) Yapısı Nedir?
+Trie, özellikle kelimeleri ve dizileri verimli bir şekilde depolamak ve aramak için kullanılan ağaç yapısıdır. Her düğüm bir harfi temsil eder ve kökten başlayarak her bir dal bir harfi işaret eder. Trie ağacı, genellikle otomatik tamamlama, kelime arama ve sözlük uygulamalarında kullanılır.
+
+Çalışma Şekli
+Kelime Ekleme: Kelimenin harfleri sırayla eklenir. Her harf için mevcut bir düğüm varsa, o düğüme geçilir, yoksa yeni bir düğüm oluşturulur.
+Kelime Arama: Aranacak kelimenin harfleri sırasıyla takip edilerek düğümler boyunca ilerlenir. Eğer tüm harfler bulunursa kelime trie içinde var demektir.
+Kelime Silme: Silinecek kelimenin harfleri takip edilerek düğümler bulunur ve gerekirse düğümler silinir. Bu işlem dikkatlice yapılmalıdır çünkü diğer kelimelerle ortak düğümler kullanılabilir.
+
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define ALPHABET_SIZE 26
+
+
+struct TrieNode {
+    struct TrieNode* children[ALPHABET_SIZE];
+    int isEndOfWord;
+};
+
+
+struct TrieNode* getNode(void) {
+    struct TrieNode* pNode = (struct TrieNode*)malloc(sizeof(struct TrieNode));
+    pNode->isEndOfWord = 0;
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        pNode->children[i] = NULL;
+    }
+    return pNode;
+}
+
+
+void insert(struct TrieNode* root, const char* key) {
+    struct TrieNode* pCrawl = root;
+    for (int level = 0; level < strlen(key); level++) {
+        int index = key[level] - 'a';
+        if (!pCrawl->children[index]) {
+            pCrawl->children[index] = getNode();
+        }
+        pCrawl = pCrawl->children[index];
+    }
+    pCrawl->isEndOfWord = 1;
+}
+
+
+int search(struct TrieNode* root, const char* key) {
+    struct TrieNode* pCrawl = root;
+    for (int level = 0; level < strlen(key); level++) {
+        int index = key[level] - 'a';
+        if (!pCrawl->children[index]) {
+            return 0;
+        }
+        pCrawl = pCrawl->children[index];
+    }
+    return (pCrawl != NULL && pCrawl->isEndOfWord);
+}
+
+int main() {
+    
+    char key[] = "rhytia";
+
+    struct TrieNode* root = getNode();
+
+    
+    insert(root, key);
+
+
+    printf("%s --- %s\n", "rhytia", search(root, "rhytia") ? "bulundu" : "bulunamadı");
+
+    return 0;
+}
